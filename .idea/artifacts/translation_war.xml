@@ -1,0 +1,14 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="translation:war">
+    <output-path>$PROJECT_DIR$/target</output-path>
+    <properties id="maven-jee-properties">
+      <options>
+        <module>translation</module>
+        <packaging>war</packaging>
+      </options>
+    </properties>
+    <root id="archive" name="ssm.war">
+      <element id="artifact" artifact-name="translation:war exploded" />
+    </root>
+  </artifact>
+</component>

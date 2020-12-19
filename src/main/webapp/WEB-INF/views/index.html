@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>zhengyang-translation</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+</head>
+<style>
+<!--    div{-->
+<!--      border: 1px solid red;-->
+<!--    }-->
+    .container{
+        margin-top: 100px;
+    }
+    #translationButton{
+        border-radius: 3px;
+        color: #fff;
+        width:100px;
+        height:40px;
+    }
+    #input_area{
+        background: #f7f8fa;
+        height: 200px;
+        border-radius: 5px;
+        margin-top: 20px;
+        margin-right: 20px;
+        padding-top: 10px;
+    }
+    #header{
+        min-height: 40px;
+    }
+    #lang_choose{
+        height:40px;
+    }
+    #area_left{
+        background: #f2f2f2;
+        border: none;
+        box-shadow: none;
+    }
+    #clearInput:hover{
+        cursor: pointer;
+        background: #f2f2f2;
+    }
+    #area-right{
+        width: 30px;
+        padding: 0;
+    }
+    #font-num{
+        padding-top: 148px;
+        width: 35px;
+        color: gray;
+        font-size: 8px;
+        display: block;
+        float: right;
+        height: 170px;
+    }
+</style>
+<body>
+<!-- 最新版本的 Bootstrap 核心 CSS 文件  -->
+    <!--首先最外面那个框框，然后框框分为两行，第一行上面哪两个小的，下面那两个大的,用那个bootstrap -->
+    <!-- 表示目前那个最外面的大框框  row -> 表示一行  col->表示列 -->
+    <!-- 整体框框是这样的不,然后在画里面细节的。不过你也可以先看效果，给个边框 用本地的就行 -->
+    <div class="container">
+        <div class="row" id="header">
+            <!-- 他左边是个下拉框对吧，然后右边是个按钮,开始写样式 -->
+            <div class="col-md-3">
+                <!-- bootstrap 里面也有对其方式的样式 多个样式这样放 居中等下在龙 ，继续 这是覆盖bootstarp里面的样式  -->
+                <select  id="lang_choose" class="form-control text-center">
+                    <option class="text-center">中文 >> 英语</option>
+                    <option>英语 >> 中文</option>
+                    <option>中文 >> 日语</option>
+                    <option>日语 >> 中文</option>
+                </select>
+            </div>
+            <div class="col-md-1"><button id="translationButton" class="btn-danger" type="button">点击翻译</button></div>
+        </div>
+        <div class="row">
+            <div id="input_area" class="col-md-5">
+                <div class="row">
+                    <!-- 这是一个输入域，当然首先还是要先画一下板块，就是左一个有一个，下面一个 也就是两行嘛 -->
+                    <div class="col-md-11" >
+                        <textarea id="area_left" class="form-control" rows="8"></textarea>
+                    </div>
+                    <div  class="col-md-1">
+                        <div id="area-right">
+                            <span id="clearInput" class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+                        </div>
+                        <div id="font-num"><span id="current-font-num">0</span>/5000</div>
+                    </div>
+                </div>
+            </div>
+            <div id="input_area" class="col-md-5">
+                翻译以后的显示
+            </div>
+        </div>
+    </div>
+</body>
+
+<script src="js/jquery-3.5.1.min.js" />
+<script>
+    	//这里什么都不要写。只留一个空白的script标签
+</script>
+<script>
+    $(document).ready(function(){
+        $.ajaxSetup({
+            async: false
+        });
+    });
+    $('#clearInput').click(function(){
+        $('#area_left').val('');
+    })
+    $('#area_left').change(function(){
+        var input_str = $('#area_left').val();
+        $('#current-font-num').text(input_str.length)
+    })
+    $('#translationButton').click(function(){
+        var selectLang = $('#lang_choose').val();
+        var s = selectLang.split(">>");
+        var fromLang = changeCn(s[0].trim());
+        var toLang = changeCn(s[1].trim());
+        var content =  $('#area_left').val();
+        var data;
+        $.post("/ssm_war/getTranslationContent", { fromLang: fromLang, toLang: toLang, content: content },
+            function(res){
+                data = res;
+            });
+        $.ajax({
+            url: 'http://api.fanyi.baidu.com/api/trans/vip/translate',
+            type: 'get',
+            data: data,
+            dataType: 'jsonp',
+            success: function (data) {
+                console.log(data);
+                var list = data.trans_result;
+                var result = "";
+                $.each(list, function(i,v){
+                    result= result+v.dst;
+                });
+                $('#input_area').text(result);
+            }
+        });
+    })
+    function changeCn(str){
+        if(str=='中文'){
+            return 'zh'
+        }else if(str == '英语'){
+            return 'en'
+        } else if(str == '日语'){
+            return 'jp'
+        }
+    }
+</script>
+
+</html>
