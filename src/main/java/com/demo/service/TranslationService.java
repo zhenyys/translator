@@ -6,15 +6,27 @@ import com.demo.util.MD5Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-import javax.annotation.Resource;
-import java.nio.charset.StandardCharsets;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
+
+import static com.alibaba.fastjson.util.IOUtils.close;
 
 /**
  * @author zhengyang
@@ -29,31 +41,28 @@ public class TranslationService {
     private final String appid = "20201217000649248";
     private final String password = "drCQotmCTKpS75B27eTd";
     private final String url = "http://api.fanyi.baidu.com/api/trans/vip/translate";
-    private HttpHeaders headers = new HttpHeaders();
 
-    public Map<String, String> getResponse(RequestParam requestParam){
-//        Map<String, String> requestParam1 = getRequestParam(requestParam);
-//        String requestUrl = formatUrl(requestParam1, new StringBuffer(url));
-//        headers.setCacheControl("no-cache");
-//        headers.setConnection("keep-alive");
-//        ResponseEntity<Map> exchange = restTemplate.exchange(requestUrl, HttpMethod.GET, new HttpEntity(headers), Map.class);
-//        if(exchange.getStatusCode() == HttpStatus.OK){
-//            Map body = exchange.getBody();
-//            if(body != null){
-//                return body;
-//            }
-//        }
-        return getRequestParam(requestParam);
+
+    public Map<String,String> restTemplateSendRequest(RequestParam requestParam){
+        Map<String, String> requestParam1 = getRequestParam(requestParam);
+        String sendUrl = formatUrl(requestParam1, new StringBuffer(url));
+        ResponseEntity<String> exchange = restTemplate.exchange(sendUrl, HttpMethod.GET, new HttpEntity<>(new HttpHeaders()), String.class);
+        if(exchange.getStatusCode() == HttpStatus.OK){
+            String body = exchange.getBody();
+            return JSON.parseObject(body, Map.class);
+        }
+        return null;
     }
 
     private Map<String,String> getRequestParam(RequestParam requestParam){
         String random = String.valueOf(System.currentTimeMillis());
-        StringBuffer sb = new StringBuffer(appid).append(requestParam.getContent()).append(random).append(password);
+        String sb = appid + requestParam.getContent() + random + password;
         HashMap<String,String> map = new HashMap<String,String>();
         map.put("q",requestParam.getContent());
         map.put("from",requestParam.getFromLang());
         map.put("to",requestParam.getToLang());
         map.put("appid",appid);
+        map.put("salt",random);
         map.put("sign", MD5Util.md5(sb.toString()));
         return map;
     }

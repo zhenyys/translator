@@ -16,7 +16,7 @@ public class TranslationController {
 
     @RequestMapping("/getTranslationContent")
     public Map<String, String> getTranslationContent(RequestParam param){
-        return translationService.getResponse(param);
+        return translationService.restTemplateSendRequest(param);
     }
 
 }

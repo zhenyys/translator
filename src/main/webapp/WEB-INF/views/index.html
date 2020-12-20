@@ -22,7 +22,7 @@
         height:40px;
     }
     #input_area{
-        background: #f7f8fa;
+        background: #f2f2f2;
         height: 200px;
         border-radius: 5px;
         margin-top: 20px;
@@ -36,6 +36,11 @@
         height:40px;
     }
     #area_left{
+        background: #f2f2f2;
+        border: none;
+        box-shadow: none;
+    }
+    #tr_result{
         background: #f2f2f2;
         border: none;
         box-shadow: none;
@@ -73,6 +78,7 @@
                     <option>英语 >> 中文</option>
                     <option>中文 >> 日语</option>
                     <option>日语 >> 中文</option>
+                    <option>中文 >> 希腊语</option>
                 </select>
             </div>
             <div class="col-md-1"><button id="translationButton" class="btn-danger" type="button">点击翻译</button></div>
@@ -93,7 +99,7 @@
                 </div>
             </div>
             <div id="input_area" class="col-md-5">
-                翻译以后的显示
+                <textarea id="tr_result" class="form-control" rows="8"></textarea>
             </div>
         </div>
     </div>
@@ -122,26 +128,16 @@
         var fromLang = changeCn(s[0].trim());
         var toLang = changeCn(s[1].trim());
         var content =  $('#area_left').val();
-        var data;
+        var res_str = '';
         $.post("/ssm_war/getTranslationContent", { fromLang: fromLang, toLang: toLang, content: content },
             function(res){
-                data = res;
-            });
-        $.ajax({
-            url: 'http://api.fanyi.baidu.com/api/trans/vip/translate',
-            type: 'get',
-            data: data,
-            dataType: 'jsonp',
-            success: function (data) {
-                console.log(data);
-                var list = data.trans_result;
-                var result = "";
-                $.each(list, function(i,v){
-                    result= result+v.dst;
+                var trans_result = res.trans_result;
+                $.each( trans_result, function(i, n){
+                    res_str  = res_str + n.dst;
                 });
-                $('#input_area').text(result);
-            }
-        });
+                $('#tr_result').text(res_str);
+            });
+
     })
     function changeCn(str){
         if(str=='中文'){
@@ -150,6 +146,8 @@
             return 'en'
         } else if(str == '日语'){
             return 'jp'
+        } eles if(str = '希腊语'){
+            return 'el'
         }
     }
 </script>
