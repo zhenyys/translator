@@ -129,6 +129,7 @@
         var toLang = changeCn(s[1].trim());
         var content =  $('#area_left').val();
         var res_str = '';
+        //post() 方法通过 HTTP POST 请求从服务器载入数据。
         $.post("/ssm_war/getTranslationContent", { fromLang: fromLang, toLang: toLang, content: content },
             function(res){
                 var trans_result = res.trans_result;
@@ -146,7 +147,7 @@
             return 'en'
         } else if(str == '日语'){
             return 'jp'
-        } eles if(str = '希腊语'){
+        } else if(str = '希腊语'){
             return 'el'
         }
     }

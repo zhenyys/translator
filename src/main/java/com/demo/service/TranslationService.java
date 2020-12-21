@@ -77,11 +77,4 @@ public class TranslationService {
         return sb.substring(0,sb.length()-1);
     }
 
-    public RestTemplate getRestTemplate() {
-        return restTemplate;
-    }
-
-    public void setRestTemplate(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
-    }
 }

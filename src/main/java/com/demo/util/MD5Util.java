@@ -1,9 +1,6 @@
 package com.demo.util;
 
-import org.springframework.util.DigestUtils;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -12,7 +9,6 @@ public class MD5Util {
 
     private static final char[] hexDigits = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd',
             'e', 'f' };
-
     /**
      * 获得一个字符串的MD5值
      *
@@ -23,7 +19,6 @@ public class MD5Util {
     public static String md5(String input) {
         if (input == null)
             return null;
-
         try {
             // 拿到一个MD5转换器（如果想要SHA1参数换成”SHA1”）
             MessageDigest messageDigest = MessageDigest.getInstance("MD5");
@@ -39,7 +34,6 @@ public class MD5Util {
             return null;
         }
     }
-
 
     private static String byteArrayToHex(byte[] byteArray) {
         // new一个字符数组，这个就是用来组成结果字符串的（解释一下：一个byte是八位二进制，也就是2位十六进制字符（2的8次方等于16的2次方））
